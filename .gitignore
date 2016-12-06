@@ -40,3 +40,4 @@ geotrek/settings/custom.py
 screamshotter.log
 
 /share/
+/pip-selfcheck.json

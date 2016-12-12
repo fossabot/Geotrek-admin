@@ -3,9 +3,16 @@
 *.tar.gz
 *.mo
 
+/data
+/bin
+/cache
+/share
+/include
 /var/
 /etc/
 /install
+
+makina-states.*.log
 /.idea/
 
 # buildout stuff

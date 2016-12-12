@@ -1,8 +1,16 @@
 makina-projects.projectname:
-    data:
-        db_user: geotrek
-        db_pass: xxx
-        db_name: geotrekdb
-        db_host: 127.0.0.1
-        services_host: 127.0.0.1
-        secret_key: xxx
+  data:
+    configs:
+      etc/settings.ini:
+        source: "salt://makina-projects/{name}/files/etc/settings.ini"
+    htaccess: "/etc/{name}.webaccess"
+    # http_users:
+    #   - root: foo
+    db_user: geotrek
+    db_pass: xxx
+    db_name: geotrekdb
+    db_host: 127.0.0.1
+    services_host: 127.0.0.1
+    secret_key: xxx
+
+# vim: set ft=yaml:

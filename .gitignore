@@ -18,6 +18,7 @@ makina-states.*.log
 # buildout stuff
 .mr.developer.cfg
 .installed.cfg
+pip-selfcheck.json
 bin/
 downloads/
 develop-eggs/

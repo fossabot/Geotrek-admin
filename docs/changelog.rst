@@ -2,6 +2,14 @@
 CHANGELOG
 =========
 
+2.11.5 (2017-02-06)
+-------------------
+
+**Bug fixes**
+
+* Fix topologies and cities intersections
+
+
 2.11.4 (2017-02-01)
 -------------------
 
@@ -11,6 +19,7 @@ CHANGELOG
 * Create database with right owner if user exists but database does not
 * Make sure supervisor service is started after install
 * Fix HTML entities in feedback email
+* Fix cirkwi export for treks with multilinestring geom
 
 **Minor changes**
 

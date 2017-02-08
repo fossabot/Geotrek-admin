@@ -9,7 +9,6 @@
               mkdir -p "{{dest}}";
             fi;
             rsync -Aa --delete "{{cfg.project_root}}/" "{{dest}}/"
-            {% if 'postgres' in db.ENGINE %}
             apt-get install -y --force-yes postgresql-client
             set +e
             export PGPASSWORD="{{data.db_pass}}"
@@ -23,5 +22,4 @@
               pg_dump -f "{{dest}}/dump.sql"
             fi
             set -e
-            {% endif %}
     - user: root

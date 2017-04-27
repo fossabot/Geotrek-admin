@@ -371,6 +371,10 @@ header .url .geo {
   width: 20%;
 }
 
+.pois-details .thumbnail legend {
+  font-size: 80%;
+}
+
 .pois-details .poi > .content {
   width: 100%;
 }

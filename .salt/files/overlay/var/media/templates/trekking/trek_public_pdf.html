@@ -27,7 +27,7 @@
         {% endif %}
         <div class="main-title">
           <h1>{{ object.name }}</h1>
-          <h2>{{ object.districts.0.name }}{% if object.districts and object.city_departure %} - {% endif %}{{ object.city_departure }}</h2>
+          <h2>{{ object.city_departure }}</h2>
         </div>
         <hr>
         {% if object.picture_print %}
@@ -282,6 +282,9 @@
                 <div class="thumbnail">
                   {% if poi.thumbnail %}
                     <img src="{{ MEDIA_URL|add:poi.thumbnail.name }}">
+                      {% if poi.thumbnail.author %}
+                        <legend>{{ poi.thumbnail.author }}</legend>
+                      {% endif %}
                   {% endif %}
                 </div>
                 <div class="content with-pic">
@@ -290,9 +293,6 @@
                     {{ poi.name }} ({{ poi.letter }})
                   </h3>
                   <div class="description">{{ poi.description|safe }}</div>
-                  {% if poi.thumbnail and poi.thumbnail.author %}
-                    <legend>{{ poi.thumbnail.author }}</legend>
-                  {% endif %}
                 </div>
               </div>
             {% endfor %}

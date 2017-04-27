@@ -23,3 +23,6 @@ msgstr "Informations pratiques"
 
 msgid "All usefull informations"
 msgstr "Toutes les informations pratiques"
+
+msgid "This hike is at the heart of the national park"
+msgstr "Cette randonnée est au coeur du parc national"

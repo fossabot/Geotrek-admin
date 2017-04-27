@@ -17,3 +17,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "Project-Id-Version: \n"
 "X-Generator: Poedit 1.5.4\n"
+
+msgid "Usefull informations"
+msgstr "Informations pratiques"
+
+msgid "All usefull informations"
+msgstr "Toutes les informations pratiques"

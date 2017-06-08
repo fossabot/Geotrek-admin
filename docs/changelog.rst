@@ -2,6 +2,29 @@
 CHANGELOG
 =========
 
+2.13.0 (2017-03-02)
+-------------------
+
+**Minor changes**
+
+* MOBILE_TILES_URL settings is now a list which can be used to merge
+  different layers in mobile application
+
+
+2.12.0 (2017-02-16)
+-------------------
+
+**New features**
+
+* add loadsignage command
+
+**Minor changes**
+
+* add field implantation_year to model BaseInfrastructure
+* add field owner to model LandEdge
+* add field agreement to model LandEdge
+
+
 2.11.5 (2017-02-06)
 -------------------
 

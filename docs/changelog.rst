@@ -2,6 +2,30 @@
 CHANGELOG
 =========
 
+2.14.0
+------
+
+**WARNING!**
+
+* Upgrade to version 2.14.0 is only possible from version 2.13.0
+
+**New features**
+
+* Upgrade to Django 1.8. This is a big step, migrations are reset, please backup before upgrade.
+* Ability to skip attachment download in parsers and use extrernal links.
+
+**Minor changes**
+
+* Possibility to exclude pois in cirkwi xml export by adding ?withoutpois=1 to url (http://XXXXX/api/cirkwi/circuits.xml?withoutpois=1
+* Add MOBILE_TILES_EXTENSION setting (for compatibility with old mobile apps, set it to 'png')
+* API optimization
+* Disable auto size for service icon in trek description.
+
+**Bug fixes**
+
+* Fix topologies and cities intersections
+
+
 2.13.0 (2017-03-02)
 -------------------
 
@@ -38,6 +62,7 @@ CHANGELOG
 
 **Bug fixes**
 
+* Remove deprecated datasource (replaced by import parsers)
 * Stop install.sh if make update or wget fails
 * Create database with right owner if user exists but database does not
 * Make sure supervisor service is started after install

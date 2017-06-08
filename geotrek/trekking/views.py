@@ -5,6 +5,7 @@ import redis
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Q
+from django.db.models.query import Prefetch
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
@@ -19,12 +20,11 @@ from mapentity.views import (MapEntityLayer, MapEntityList, MapEntityJsonList,
                              MapEntityFormat, MapEntityDetail, MapEntityMapImage,
                              MapEntityDocument, MapEntityCreate, MapEntityUpdate,
                              MapEntityDelete, LastModifiedMixin, MapEntityViewSet)
-from paperclip.models import Attachment
 from rest_framework import permissions as rest_permissions, viewsets
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from geotrek.authent.decorators import same_structure_required
-from geotrek.common.models import RecordSource, TargetPortal
+from geotrek.common.models import RecordSource, TargetPortal, Attachment
 from geotrek.common.views import FormsetMixin, PublicOrReadPermMixin, DocumentPublic
 from geotrek.core.models import AltimetryMixin
 from geotrek.core.views import CreateFromTopologyMixin
@@ -35,7 +35,7 @@ from geotrek.celery import app as celery_app
 from .filters import TrekFilterSet, POIFilterSet, ServiceFilterSet
 from .forms import (TrekForm, TrekRelationshipFormSet, POIForm,
                     WebLinkCreateFormPopup, ServiceForm)
-from .models import Trek, POI, WebLink, Service
+from .models import Trek, POI, WebLink, Service, TrekRelationship, OrderedTrekChild
 from .serializers import (TrekGPXSerializer, TrekSerializer, POISerializer,
                           CirkwiTrekSerializer, CirkwiPOISerializer, ServiceSerializer)
 from .tasks import launch_sync_rando
@@ -125,7 +125,7 @@ class TrekGPXDetail(LastModifiedMixin, PublicOrReadPermMixin, BaseDetailView):
 
     def render_to_response(self, context):
         gpx_serializer = TrekGPXSerializer()
-        response = HttpResponse(mimetype='application/gpx+xml')
+        response = HttpResponse(content_type='application/gpx+xml')
         response['Content-Disposition'] = 'attachment; filename=%s.gpx' % self.get_object().slug
         gpx_serializer.serialize([self.get_object()], stream=response, geom_field='geom')
         return response
@@ -375,7 +375,16 @@ class TrekViewSet(MapEntityViewSet):
     permission_classes = [rest_permissions.DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
-        qs = Trek.objects.existing()
+        qs = self.model.objects.existing()
+        qs = qs.select_related('structure',)
+        qs = qs.prefetch_related(
+            'networks', 'source', 'portal', 'web_links', 'accessibilities', 'themes', 'aggregations',
+            'information_desks',
+            Prefetch('trek_relationship_a', queryset=TrekRelationship.objects.select_related('trek_a', 'trek_b')),
+            Prefetch('trek_relationship_b', queryset=TrekRelationship.objects.select_related('trek_a', 'trek_b')),
+            Prefetch('trek_children', queryset=OrderedTrekChild.objects.select_related('parent', 'child')),
+            Prefetch('trek_parents', queryset=OrderedTrekChild.objects.select_related('parent', 'child')),
+        )
         qs = qs.filter(Q(published=True) | Q(trek_parents__parent__published=True))\
                .order_by('pk').distinct('pk')
 
@@ -510,7 +519,7 @@ class CirkwiTrekView(ListView):
 
     def get(self, request):
         response = HttpResponse(content_type='application/xml')
-        serializer = CirkwiTrekSerializer(request, response)
+        serializer = CirkwiTrekSerializer(request, response, request.GET)
         treks = self.get_queryset()
         serializer.serialize(treks)
         return response

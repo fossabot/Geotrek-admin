@@ -49,3 +49,4 @@ screamshotter.log
 
 /share/
 /pip-selfcheck.json
+/geotrek/settings/local.py

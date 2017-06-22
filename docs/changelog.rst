@@ -2,6 +2,17 @@
 CHANGELOG
 =========
 
+2.14.1 (2017-06-22)
+-------------------
+
+**Bug fixes**
+
+* Refactor signals pre / post migrate according Django 1.8
+* Update translations
+* Fix path splitting
+* Fix AutoLogin Middleware with mapentity 3.1.4
+
+
 2.14.0
 ------
 

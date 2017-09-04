@@ -93,6 +93,8 @@ after_success:
 
 after_failure:
   - casperjs --version
+  - phantomjs --version
+  - sudo find / |grep casperjs
   - cat install.log
   - cat var/log/geotrek.log
   - cat var/log/nginx-access.log

@@ -21,4 +21,4 @@ casper.evaluate(function() {
             test.done();
         });
     });
-}
+});

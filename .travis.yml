@@ -1,21 +1,24 @@
+dist: trusty
+
+sudo: required
+
 language: python
+
 python:
   - "2.7"
+
 env:
   - ACTION=test
   - ACTION=deploy
   - ACTION=integration
   - ACTION=codestyle
 
-
 matrix:
   allow_failures:
     - env: ACTION=integration
 
-
 cache:
   - apt
-
 
 before_install:
 
@@ -38,6 +41,8 @@ before_install:
   # GDAL-fix -- Do not install postgis locally, trick test on host
   - make etc/settings.ini
   - sed -i "s/localhost/127.0.0.1/" etc/settings.ini
+  # fix postgis travis
+  - sudo apt-get install postgis
   # GDAL-fix -- Use Travis PostGIS, initialize DB
   - sudo sed -i "s/^client_min_messages.*$/client_min_messages = log/" /etc/postgresql/*/main/postgresql.conf
   - sudo /etc/init.d/postgresql restart

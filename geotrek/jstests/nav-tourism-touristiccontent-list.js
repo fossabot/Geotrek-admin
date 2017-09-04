@@ -1,24 +1,20 @@
 var utils = require('./_nav-utils.js');
-casper.evaluate(function() {
-    casper.test.begin('Touristic content categories', function (test) {
 
-        casper.start(utils.baseurl + '/touristiccontent/list/', function (response) {
-            test.assertExists('a[href="/touristiccontent/add/"]', 'Add button exists');
+casper.test.begin('Touristic content categories', function (test) {
 
-            // Select a category
-            casper.click("a[data-category='1']");
-            casper.waitForSelector("a[href='/touristiccontent/add/?category=1']");
-        });
+    casper.start(utils.baseurl + '/touristiccontent/list/', function (response) {
+        test.assertExists('a[href="/touristiccontent/add/"]', 'Add button exists');
 
-        casper.then(function () {
-            test.pass('Selected category is passed to Add button');
+        // Select a category
+        casper.click("a[data-category='1']");
+        casper.waitForSelector("a[href='/touristiccontent/add/?category=1']");
 
-            test.assertExists('#id_category.filter-set',
-                'Category filter is shown as set.');
-        });
+        test.pass('Selected category is passed to Add button');
 
-        casper.run(function done() {
-            test.done();
-        });
+        test.assertExists('#id_category.filter-set',
+            'Category filter is shown as set.');
+    }).run(function() {
+        test.done();
     });
+
 });

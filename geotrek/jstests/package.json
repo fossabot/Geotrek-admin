@@ -5,9 +5,9 @@
     "test": "make test_js"
   },
   "dependencies": {
-    "leaflet": "0.5.1",
-    "mocha": "1.9.0",
-    "chai": "1.6.0",
-    "mocha-phantomjs": "2.0.1"
+    "leaflet": "0.7.7",
+    "mocha": "3.5.0",
+    "chai": "4.1.2",
+    "mocha-phantomjs": "4.0.1"
   }
 }

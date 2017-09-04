@@ -203,13 +203,6 @@ function minimum_system_dependencies {
     echo_progress
     sudo apt-get install -y -qq python unzip wget python-software-properties
     echo_progress
-    if [ $precise -eq 1 ]; then
-        sudo apt-add-repository -y ppa:git-core/ppa
-        sudo apt-add-repository -y ppa:ubuntugis/ppa
-        sudo apt-get update -qq
-        echo_progress
-    fi
-
     sudo apt-get install -y -qq git gettext python-virtualenv build-essential python-dev
     echo_progress
 }
@@ -598,9 +591,7 @@ trusty=$(grep "Ubuntu 14.04" /etc/issue | wc -l)
 vivid=$(grep "Ubuntu 15.04" /etc/issue | wc -l)
 xenial=$(grep "Ubuntu 16.04" /etc/issue | wc -l)
 
-if [ $precise -eq 1 ]; then
-    psql_version=9.1
-    pgis_version=2.0
+
 elif [ $trusty -eq 1 ]; then
     psql_version=9.3
     pgis_version=2.1
@@ -612,8 +603,10 @@ elif [ $xenial -eq 1 ]; then
     pgis_version=2.2
 fi
 
-if [ $precise -eq 1 -o $trusty -eq 1 -o $vivid -eq 1 -o $xenial -eq 1 ] ; then
+if [ $trusty -eq 1 -o $vivid -eq 1 -o $xenial -eq 1 ] ; then
     geotrek_setup
+elif [ $precise -eq 1 ] ; then
+    exit_error 5 "Ubuntu 12.04 (Precise) support was dropped. Aborted."
 else
     exit_error 5 "Unsupported operating system. Aborted."
 fi

@@ -592,7 +592,7 @@ vivid=$(grep "Ubuntu 15.04" /etc/issue | wc -l)
 xenial=$(grep "Ubuntu 16.04" /etc/issue | wc -l)
 
 
-elif [ $trusty -eq 1 ]; then
+if [ $trusty -eq 1 ]; then
     psql_version=9.3
     pgis_version=2.1
 elif [ $vivid -eq 1 ]; then
@@ -602,6 +602,7 @@ elif [ $xenial -eq 1 ]; then
     psql_version=9.5
     pgis_version=2.2
 fi
+
 
 if [ $trusty -eq 1 -o $vivid -eq 1 -o $xenial -eq 1 ] ; then
     geotrek_setup

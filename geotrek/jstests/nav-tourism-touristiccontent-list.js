@@ -6,13 +6,18 @@ casper.test.begin('Touristic content categories', function (test) {
         test.assertExists('a[href="/touristiccontent/add/"]', 'Add button exists');
 
         // Select a category
-        casper.click("a[data-category='1']");
-        casper.waitForSelector("a[href='/touristiccontent/add/?category=1']");
-
-        test.pass('Selected category is passed to Add button');
+        casper.waitForSelector("a[data-category='1']", function(){
+            casper.click("a[data-category='1']");
+            casper.waitForSelector("a[href='/touristiccontent/add/?category=1']", function(){
+                test.pass('Selected category is passed to Add button');
 
         test.assertExists('#id_category.filter-set',
             'Category filter is shown as set.');
+            });
+        });
+
+
+
     }).run(function() {
         test.done();
     });

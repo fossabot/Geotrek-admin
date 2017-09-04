@@ -565,8 +565,7 @@ function geotrek_setup {
             sudo cp etc/supervisor-geotrek.conf /etc/supervisor/conf.d/
             sudo cp etc/supervisor-geotrek-api.conf /etc/supervisor/conf.d/
             sudo cp etc/supervisor-geotrek-celery.conf /etc/supervisor/conf.d/
-            sudo cp etc/supervisor-tilecache.conf /etc/supervisor/conf.d/
-            
+
             if $standalone ; then
                 sudo cp etc/supervisor-convertit.conf /etc/supervisor/conf.d/
                 sudo cp etc/supervisor-screamshotter.conf /etc/supervisor/conf.d/

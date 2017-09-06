@@ -13,14 +13,13 @@ casper.test.begin('Touristic content categories', function(test) {
             'category': ['1'] // Accomodation
         });
 
-        casper.waitUntilVisible('#div_id_type1');
-    });
-
-    casper.then(function () {
-        test.pass('Touristic types appear when category is selected');
-
-        test.assertExists("#id_type1 option[value='9']", 'Some types are kept in list');
-        test.assertNotExists("#id_type1 option[value='10']", 'Some types were removed');
+        casper.evaluate(function(){
+            casper.waitUntilVisible('#div_id_type1', function(){
+                test.pass('Touristic types appear when category is selected');
+                test.assertExists("#id_type1 option[value='9']", 'Some types are kept in list');
+                test.assertNotExists("#id_type1 option[value='10']", 'Some types were removed');
+            });
+        });
     });
 
     casper.run(function done() {

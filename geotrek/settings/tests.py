@@ -4,6 +4,7 @@ from .default import *
 #  Django Tests
 # ..........................
 
+DEBUG = True
 TEST = True
 
 TEST_EXCLUDE = ('django',)

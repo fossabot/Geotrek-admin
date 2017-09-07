@@ -80,7 +80,7 @@ script:
   - if [[ $ACTION == deploy || $ACTION == integration ]]; then make load_demo; fi
   - if [[ $ACTION == deploy ]]; then sudo supervisorctl restart all; fi
   - if [[ $ACTION == deploy ]]; then sudo service nginx restart; fi
-  - if [[ $ACTION == deploy ]]; then ./bin/django collectstatic --no-input; fi
+  - if [[ $ACTION == deploy ]]; then ./bin/django collectstatic --noinput; fi
   - if [[ $ACTION == deploy ]]; then make test_nav host=localhost port=80; fi
   - if [[ $ACTION == integration ]]; then make test_export host=localhost port=80; fi
   - if [[ $ACTION == test ]]; then make env_test test; fi

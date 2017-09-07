@@ -1,7 +1,7 @@
 SHELL = /bin/bash
 
 port=8000
-host=127.0.0.1
+host=0.0.0.0
 listen=$(host):$(port)
 baseurl=http://$(listen)
 user=$(shell whoami)

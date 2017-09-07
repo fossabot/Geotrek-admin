@@ -95,9 +95,8 @@ after_success:
   - if [[ $ACTION == test ]]; then coveralls; fi
 
 after_failure:
-  - casperjs --version
-  - phantomjs --version
-  - sudo find / |grep casperjs
+  - wget http://locahost/static/mapentity/jquery.min.js
+  - cat jquery.min.js
   - cat install.log
   - cat var/log/geotrek.log
   - cat var/log/nginx-access.log

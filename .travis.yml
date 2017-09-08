@@ -7,12 +7,6 @@ language: python
 python:
   - "2.7"
 
-addons:
-  postgresql: "9.6"
-  apt:
-    packages:
-      - postgresql-9.6-postgis-2.2
-
 env:
   - ACTION=test
   - ACTION=deploy
@@ -45,7 +39,7 @@ before_install:
 
   # GDAL-fix -- packaging is miserable, no way to obtain libgdal-dev for libgdal1 when libgdal1h available
   - sudo apt-get update -qq
-  - sudo apt-get remove postgresql-9.6-postgis-2.3
+  - sudo apt-get remove postg* -y
   - sudo apt-get download -y libgdal-dev
   - sudo dpkg-deb -x libgdal-dev*.deb /
   - sudo ln -sf /usr/lib/libgdal.so.1 /usr/lib/libgdal.so
@@ -56,13 +50,13 @@ before_install:
   #- sed -i "s/GDAL=.*/GDAL=1.9.0/" conf/buildout.cfg
   # GDAL-fix -- Do not install postgis locally, trick test on host
   - make etc/settings.ini
-  - sed -i "s/localhost/127.0.0.1/" etc/settings.ini
+  #- sed -i "s/localhost/127.0.0.1/" etc/settings.ini
   # GDAL-fix -- Use Travis PostGIS, initialize DB
-  - sudo sed -i "s/^client_min_messages.*$/client_min_messages = log/" /etc/postgresql/*/main/postgresql.conf
-  - sudo /etc/init.d/postgresql restart
-  - psql -c "CREATE DATABASE geotrekdb ENCODING 'UTF8' TEMPLATE template0;" -U postgres
-  - psql -c 'CREATE EXTENSION postgis;' -U postgres -d geotrekdb
-  - psql -c "CREATE USER geotrek WITH PASSWORD 'geotrek';" -U postgres
+  #- sudo sed -i "s/^client_min_messages.*$/client_min_messages = log/" /etc/postgresql/*/main/postgresql.conf
+  #- sudo /etc/init.d/postgresql restart
+  #- psql -c "CREATE DATABASE geotrekdb ENCODING 'UTF8' TEMPLATE template0;" -U postgres
+  #- psql -c 'CREATE EXTENSION postgis;' -U postgres -d geotrekdb
+  #- psql -c "CREATE USER geotrek WITH PASSWORD 'geotrek';" -U postgres
   # django tests require to be superuser to create test db with postgis extension
   - if [[ $ACTION == test ]]; then psql -c "ALTER USER geotrek SUPERUSER;" -U postgres; fi
   - psql -c 'GRANT ALL PRIVILEGES ON DATABASE geotrekdb TO geotrek;' -U postgres

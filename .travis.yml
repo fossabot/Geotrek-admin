@@ -34,8 +34,8 @@ before_install:
   - "wget http://prod-geotrek-fr.makina-corpus.net/media/upload/geotrek-bundle.tar.gz -O /tmp/geotrek-bundle.tar.gz || true"
   - "tar -zxf /tmp/geotrek-bundle.tar.gz --directory=$HOME || true"
 
-  - sudo apt-get remove phantomjs oracle-java9-installer oracle-java9-set-default oracle-java9-unlimited-jce-policy chromium-browser chromium-codecs-ffmpeg-extra
-  - sudo apt-get autoremove
+  #- sudo apt-get remove phantomjs oracle-java9-installer oracle-java9-set-default oracle-java9-unlimited-jce-policy chromium-browser chromium-codecs-ffmpeg-extra
+  #- sudo apt-get autoremove
   - sudo rm -rf /usr/local/bin/phantomjs*
   - sudo rm -rf /usr/bin/phantomjs*
   - sudo rm -rf /usr/local/phantomjs*
@@ -66,7 +66,7 @@ before_install:
   - if [[ $ACTION == test ]]; then psql -c "ALTER USER geotrek SUPERUSER;" -U postgres; fi
   - psql -c 'GRANT ALL PRIVILEGES ON DATABASE geotrekdb TO geotrek;' -U postgres
   - psql -c 'GRANT ALL ON spatial_ref_sys,geometry_columns,raster_columns TO geotrek;' -U postgres -d geotrekdb
-  # GDAL-fix -- End (remove with Ubuntu 14.04)
+  # GDAL-fix -- End
 
 install:
   - if [[ $ACTION != codestyle ]]; then deactivate; fi
@@ -79,7 +79,7 @@ script:
   - if [[ $ACTION == codestyle ]]; then find geotrek/*/migrations/*.py | xargs grep -l srid | xargs grep -L SRID; fi
   - if [[ $ACTION == deploy || $ACTION == integration ]]; then make load_demo; fi
   - if [[ $ACTION == deploy ]]; then sudo chmod 777 -R /home/travis; fi
-  - if [[ $ACTION == deploy ]]; then sudo chmod -R a+r /home; fi
+  #- if [[ $ACTION == deploy ]]; then sudo chmod -R a+r /home; fi
   - if [[ $ACTION == deploy ]]; then make test_nav host=localhost port=80; fi
   - if [[ $ACTION == integration ]]; then make test_export host=localhost port=80; fi
   - if [[ $ACTION == test ]]; then make env_test test; fi
@@ -94,8 +94,6 @@ after_success:
   - if [[ $ACTION == test ]]; then coveralls; fi
 
 after_failure:
-  - wget http://localhost/static/mapentity/jquery.min.js
-  - cat jquery.min.js
   - cat install.log
   - cat var/log/geotrek.log
   - cat var/log/nginx-access.log

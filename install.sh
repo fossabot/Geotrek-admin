@@ -201,7 +201,7 @@ function check_postgres_connection {
 function minimum_system_dependencies {
     sudo apt-get update -qq
     echo_progress
-    sudo apt-get install -y -qq python unzip wget python-software-properties
+    sudo apt-get install -y -qq python unzip wget python-software-properties software-properties-common
     echo_progress
     sudo apt-get install -y -qq git gettext python-virtualenv build-essential python-dev
     echo_progress
@@ -209,6 +209,8 @@ function minimum_system_dependencies {
 
 
 function geotrek_system_dependencies {
+    sudo add-apt-repository ppa:ubuntugis/ppa -y
+    sudo apt-get update -qq
     sudo apt-get install -y -q --no-upgrade libjson0 gdal-bin libgdal-dev binutils libproj-dev
     
     echo_progress
@@ -218,7 +220,7 @@ function geotrek_system_dependencies {
     sudo apt-get install -y -qq libxml2-dev libxslt-dev  # pygal lxml
     echo_progress
     # Necessary for MapEntity Weasyprint
-    sudo apt-get install -y -qq python-dev python-lxml libcairo2 libpango1.0-0 libgdk-pixbuf2.0-dev libffi-dev shared-mime-info
+    sudo apt-get install -y -qq python-lxml libcairo2 libpango1.0-0 libgdk-pixbuf2.0-dev libffi-dev shared-mime-info
     echo_progress
     # Redis for async imports and tasks management
     sudo apt-get install -y -qq redis-server

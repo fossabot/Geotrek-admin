@@ -178,22 +178,24 @@ function ini_value () {
 
 
 function check_postgres_connection {
-    echo_step "Check postgres connection settings..."
-    # Check that database connection is correct
-    dbname=$(ini_value $settingsfile dbname)
-    dbhost=$(ini_value $settingsfile dbhost)
-    dbport=$(ini_value $settingsfile dbport)
-    dbuser=$(ini_value $settingsfile dbuser)
-    dbpassword=$(ini_value $settingsfile dbpassword)
+    if $prod || $standalone ; then
+        echo_step "Check postgres connection settings..."
+        # Check that database connection is correct
+        dbname=$(ini_value $settingsfile dbname)
+        dbhost=$(ini_value $settingsfile dbhost)
+        dbport=$(ini_value $settingsfile dbport)
+        dbuser=$(ini_value $settingsfile dbuser)
+        dbpassword=$(ini_value $settingsfile dbpassword)
 
-    export PGPASSWORD=$dbpassword
-    psql $dbname -h $dbhost -p $dbport -U $dbuser -c "SELECT PostGIS_full_version();"
-    result=$?
-    export PGPASSWORD=
-    if [ ! $result -eq 0 ]
-    then
-        echo_error "Failed to connect to database with settings provided in '$settingsfile'."
-        exit_error 4 "Check your postgres configuration (``pg_hba.conf``) : it should allow md5 identification for user '${dbuser}' on database '${dbname}'"
+        export PGPASSWORD=$dbpassword
+        psql $dbname -h $dbhost -p $dbport -U $dbuser -c "SELECT PostGIS_full_version();"
+        result=$?
+        export PGPASSWORD=
+        if [ ! $result -eq 0 ]
+        then
+            echo_error "Failed to connect to database with settings provided in '$settingsfile'."
+            exit_error 4 "Check your postgres configuration (``pg_hba.conf``) : it should allow md5 identification for user '${dbuser}' on database '${dbname}'"
+        fi
     fi
 }
 
@@ -201,43 +203,31 @@ function check_postgres_connection {
 function minimum_system_dependencies {
     sudo apt-get update -qq
     echo_progress
-    sudo apt-get install -y -qq python unzip wget python-software-properties
+    sudo apt-get install -y -qq python python-dev unzip wget python-software-properties
     echo_progress
-    if [ $precise -eq 1 ]; then
-        sudo apt-add-repository -y ppa:git-core/ppa
-        sudo apt-add-repository -y ppa:ubuntugis/ppa
-        sudo apt-get update -qq
-        echo_progress
-    fi
-
-    sudo apt-get install -y -qq git gettext python-virtualenv build-essential python-dev
+    sudo apt-add-repository -y ppa:ubuntugis/ppa
+    sudo apt-get update -qq
+    echo_progress
+    sudo apt-get install -y -qq git gettext python-virtualenv build-essential
     echo_progress
 }
 
 
 function geotrek_system_dependencies {
-    sudo apt-get install -y -q --no-upgrade libjson0 gdal-bin libgdal-dev
-    
-    if [ $xenial -eq 1 ]; then
-        sudo apt-get install libgeos-c1v5 libproj9
-    else
-        sudo apt-get install libgeos-c1 libproj0
-    fi
-    
+    sudo apt-get install -y -q --no-upgrade libjson0 gdal-bin libgdal-dev binutils libproj-dev
     echo_progress
     # PostgreSQL client and headers
-    sudo apt-get install -y -q --no-upgrade postgresql-client-$psql_version postgresql-server-dev-$psql_version
+    sudo apt-get install -y -q --no-upgrade postgresql-client-$psql_version libpq-dev
     echo_progress
     sudo apt-get install -y -qq libxml2-dev libxslt-dev  # pygal lxml
     echo_progress
     # Necessary for MapEntity Weasyprint
-    sudo apt-get install -y -qq python-dev python-lxml libcairo2 libpango1.0-0 libgdk-pixbuf2.0-dev libffi-dev shared-mime-info
-    echo_progress
-    # Redis for async imports and tasks management
-    sudo apt-get install -y -qq redis-server
+    sudo apt-get install -y -qq python-lxml libcairo2 libpango1.0-0 libgdk-pixbuf2.0-dev libffi-dev shared-mime-info
     echo_progress
 
     if $prod || $standalone ; then
+        sudo apt-get install -y -qq redis-server
+        echo_progress
         sudo apt-get install -y -qq ntp fail2ban
         echo_progress
         sudo apt-get install -y -qq nginx memcached supervisor
@@ -256,7 +246,7 @@ function convertit_system_dependencies {
 
 
 function screamshotter_system_dependencies {
-    if $dev || $tests || $standalone ; then
+    if $standalone ; then
         # Note: because tests require casper and phantomjs
         echo_step "Capture server dependencies..."
         arch=`uname -m`
@@ -456,14 +446,15 @@ function geotrek_setup {
     convertit_system_dependencies
     screamshotter_system_dependencies
 
-    # If database is local, install it !
-    dbhost=$(ini_value $settingsfile dbhost)
-    if [ "${dbhost}" == "localhost" ] ; then
-        install_postgres_local
-    fi
+    if $prod || $standalone ; then
+        # If database is local, install it !
+        dbhost=$(ini_value $settingsfile dbhost)
+        if [ "${dbhost}" == "localhost" ] ; then
+            install_postgres_local
+        fi
 
-    check_postgres_connection
-	
+        check_postgres_connection
+	fi
     echo_step "Install Geotrek python dependencies..."
     if $dev ; then
         make env_dev
@@ -478,6 +469,7 @@ function geotrek_setup {
     if [ $success -ne 0 ]; then
         exit_error 3 "Could not setup python environment !"
     fi
+
 
     export PGPASSWORD=$dbpassword
     psql $dbname -h $dbhost -p $dbport -U $dbuser -c "SELECT * FROM django.south_migrationhistory;"

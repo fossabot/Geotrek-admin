@@ -1,0 +1,54 @@
+ version: '2'
+ services:
+   db:
+     image: mdillon/postgis:9.6
+     hostname: geotrek-postgres
+     env_file:
+       - docker.env
+     volumes:
+       - ./var/postgresql:/var/lib/postgresql/data
+     ports:
+      - "5432:5432"
+
+   redis:
+     image: redis:latest
+     hostname: geotrek-redis
+     env_file:
+       - docker.env
+
+   convertit:
+     hostname: geotrek-convertit
+     build:
+       context: ./convertit-master
+     working_dir: /opt/apps/convertit/
+     command: /opt/apps/convertit/bin/pserve development.ini --reload
+
+   screamshotter:
+     hostname: geotrek-screamshotter
+     build:
+       context: ./screamshotter-master
+     command: /opt/apps/screamshotter/bin/python manage.py runserver 0.0.0.0:8001
+
+   django:
+     build: .
+     image: geotrek:2.15.2.dev0
+     hostname: geotrek-django
+     tty: true
+     volumes:
+       - .:/code
+     ports:
+       - "8000:8000"
+       - "2222:22"
+     env_file:
+       - docker.env
+     user: "1001"
+     environment:
+       - DJANGO_SETTINGS_MODULE=geotrek.settings.local
+     depends_on:
+       - db
+       - redis
+       #- convertit
+       #- screamshotter
+     working_dir: /code
+     command: python ./manage.py runserver 0.0.0.0:8000
+

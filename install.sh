@@ -424,7 +424,10 @@ function geotrek_setup {
     fi
 
     # Python bootstrap
-    make install
+    #make install
+    virtualenv venv
+    source ./venv/bin/activate
+    pip install -r ./requirements.txt -U
     echo_progress
 
     if $freshinstall && $interactive && ($prod || $standalone) ; then
@@ -456,11 +459,7 @@ function geotrek_setup {
         check_postgres_connection
 	fi
     echo_step "Install Geotrek python dependencies..."
-    if $dev ; then
-        make env_dev
-    elif $tests ; then
-        make env_test
-    elif $prod ; then
+   if $prod ; then
         make env_prod
     elif $standalone ; then
         make env_standalone
@@ -470,7 +469,7 @@ function geotrek_setup {
         exit_error 3 "Could not setup python environment !"
     fi
 
-
+    if $prod || $standalone ; then
     export PGPASSWORD=$dbpassword
     psql $dbname -h $dbhost -p $dbport -U $dbuser -c "SELECT * FROM django.south_migrationhistory;"
     if [ $? -eq 0 ]; then
@@ -495,7 +494,7 @@ function geotrek_setup {
             bin/django migrate --fake-initial zoning --noinput
         fi
     fi
-
+    fi
     if $dev ; then
         echo_step "Initializing data..."
         make update

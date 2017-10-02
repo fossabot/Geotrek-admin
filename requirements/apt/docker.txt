@@ -1,0 +1,4 @@
+sudo
+software-properties-common
+python-software-properties
+python

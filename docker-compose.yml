@@ -6,7 +6,7 @@
      env_file:
        - docker.env
      volumes:
-       - ./var/postgresql:/var/lib/postgresql/data
+       - ./private/postgresql:/var/lib/postgresql
      ports:
       - "5432:5432"
 
@@ -47,8 +47,8 @@
      depends_on:
        - db
        - redis
-       #- convertit
-       #- screamshotter
+       - convertit
+       - screamshotter
      working_dir: /code
-     command: python ./manage.py runserver 0.0.0.0:8000
+     command: /code/venv/bin/python ./manage.py runserver_plus 0.0.0.0:8000
 

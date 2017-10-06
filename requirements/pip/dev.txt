@@ -1,4 +1,4 @@
--r ./tests.txt
+-r tests.txt
 
 ipython
 werkzeug

@@ -17,7 +17,7 @@ RUN useradd -ms /bin/bash django --uid 1001
 RUN chown django:django -R /code
 RUN mkdir /var/log/gunicorn
 RUN chown django:django -R /var/log/gunicorn
-ADD geotrek /code
+ADD geotrek /code/geotrek
 ADD bulkimport /code/bulkimport
 ADD conf /code/conf
 ADD install.sh /code
@@ -29,7 +29,7 @@ ADD docs /code/docs
 RUN chown django:django -R /code
 RUN gdal-config --version
 USER django
-RUN virtualenv venv
-RUN venv/bin/pip install pip setuptools wheel -U
-RUN venv/bin/pip install --no-cache-dir -r /code/requirements/pip/dev.txt
+RUN virtualenv /code/venv
+RUN /code/venv/bin/pip install --no-cache-dir -r /code/requirements/pip/dev.txt
+RUN /code/venv/bin/pip install --no-cache-dir -r /code/requirements/pip/prod.txt
 USER django

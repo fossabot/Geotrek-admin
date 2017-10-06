@@ -22,4 +22,3 @@ shared-mime-info
 python-lxml
 libpq-dev
 libgdal-dev
-libgdal1-dev

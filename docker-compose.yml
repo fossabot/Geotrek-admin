@@ -6,7 +6,7 @@
      env_file:
        - docker.env
      volumes:
-       - ./private/postgresql:/var/lib/postgresql
+       - ./private/postgresql:/var/lib/postgresql/data
      ports:
       - "5432:5432"
 
@@ -35,7 +35,7 @@
      hostname: geotrek-django
      tty: true
      volumes:
-       - .:/code
+       - ./geotrek:/code/geotrek
      ports:
        - "8000:8000"
        - "2222:22"

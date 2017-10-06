@@ -26,18 +26,12 @@ etc/settings.ini:
 	chmod -f 600 etc/settings.ini
 
 bin/python:
-	virtualenv -p /usr/bin/python2 .
-	bin/pip install -U setuptools
-	mkdir -p lib/src
-	mkdir -p lib/eggs
-	wget --quiet -O $(BUILDOUT_BOOTSTRAP) $(BUILDOUT_BOOTSTRAP_URL)
-	bin/python $(BUILDOUT_BOOTSTRAP) $(BUILDOUT_BOOTSTRAP_ARGS)
-	rm $(BUILDOUT_BOOTSTRAP)
+	virtualenv -p /usr/bin/python2 venv
+	venv/bin/pip install -U pip setuptools
 
 install: etc/settings.ini bin/python
 
 clean_harmless:
-	find . -name "*.orig" -exec rm -f {} \;
 	find geotrek/ -name "*.pyc" -exec rm -f {} \;
 	-find lib/src/ -name "*.pyc" -exec rm -f {} \;
 	rm -f install
@@ -54,6 +48,7 @@ clean: clean_harmless
 	rm -rf etc/*.cfg
 	rm -rf etc/*.conf
 	rm -f .installed.cfg
+	rm -rf venv/
 
 
 
@@ -90,7 +85,7 @@ test_js: node_modules
 tests: test test_js test_nav
 
 serve:
-	bin/django runserver_plus --threaded $(listen)
+	./manage.py runserver_plus --threaded $(listen)
 
 services:
 	@echo "Stop convertit"
@@ -103,12 +98,12 @@ services:
 	bin/django runserver --settings=screamshotter.settings 8001 &
 
 update:
-	bin/develop update -f
-	bin/django collectstatic --clear --noinput --verbosity=0
-	bin/django migrate --noinput
-	bin/django sync_translation_fields --noinput
-	bin/django update_translation_fields
-	bin/django update_geotrek_permissions
+	#bin/develop update -f
+	./manage.py collectstatic --clear --noinput --verbosity=0
+	./manage.py migrate --noinput
+	./manage.py sync_translation_fields --noinput
+	./manage.py update_translation_fields
+	./manage.py update_geotrek_permissions
 	make all_compilemessages
 
 deploy: update
@@ -125,13 +120,13 @@ all_compilemessages:
 
 load_data:
 	# /!\ will delete existing data
-	bin/django loaddata minimal
-	bin/django loaddata cirkwi
-	bin/django loaddata basic
+	./manage.py loaddata minimal
+	./manage.py loaddata cirkwi
+	./manage.py loaddata basic
 	for dir in `find geotrek/ -type d -name upload`; do pushd `dirname $$dir` > /dev/null; cp -R upload/* $(ROOT_DIR)/var/media/upload/ ; popd > /dev/null; done
 
 load_demo: load_data
-	bin/django loaddata development-pne
+	./manage.py loaddata development-pne
 
 css:
 	for f in `find geotrek/ -name '*.scss'`; do node-sass --output-style=expanded $$f -o `dirname $$f`; done

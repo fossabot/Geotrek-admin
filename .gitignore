@@ -43,3 +43,4 @@ screamshotter.log
 /share/
 /geotrek/settings/local.py
 /docker.env
+/src/bulkimport/parsers.py

@@ -7,7 +7,7 @@ baseurl=http://$(listen)
 user=$(shell whoami)
 version=$(shell git describe --tags --abbrev=0)
 
-ROOT_DIR=$(shell pwd)
+ROOT_DIR=$(shell pwd)/src
 BUILDOUT_CFG = $(ROOT_DIR)/conf/buildout.cfg
 BUILDOUT_VERSION = 1.7.1
 BUILDOUT_BOOTSTRAP_URL = http://downloads.buildout.org/2/bootstrap.py
@@ -26,13 +26,15 @@ etc/settings.ini:
 	chmod -f 600 etc/settings.ini
 
 bin/python:
-	virtualenv -p /usr/bin/python2 venv
-	venv/bin/pip install -U pip setuptools
+	rm -rf venv
+	virtualenv venv
+	venv/bin/pip install -U pip setuptools wheel
 
 install: etc/settings.ini bin/python
 
 clean_harmless:
-	find geotrek/ -name "*.pyc" -exec rm -f {} \;
+	#find . -name "*.orig" -exec rm -f {} \;
+	find src/geotrek/ -name "*.pyc" -exec rm -f {} \;
 	-find lib/src/ -name "*.pyc" -exec rm -f {} \;
 	rm -f install
 	rm -f .coverage
@@ -67,7 +69,7 @@ env_standalone: install clean_harmless
 
 
 test:
-	bin/django test --noinput geotrek
+	./manage.py test --noinput geotrek
 
 test_nav:
 	casperjs test --baseurl=$(baseurl) geotrek/jstests/nav-*.js
@@ -87,18 +89,7 @@ tests: test test_js test_nav
 serve:
 	./manage.py runserver_plus --threaded $(listen)
 
-services:
-	@echo "Stop convertit"
-	kill $(shell netstat -tlp 2>/dev/null | grep ':6543' | sed 's;.*LISTEN      \([0-9]*\)/python;\1;'); true
-	@echo "Stop screamshotter"
-	kill $(shell netstat -tlp 2>/dev/null | grep ':8001' | sed 's;.*LISTEN      \([0-9]*\)/python;\1;'); true
-	@echo "Start convertit"
-	bin/convertit lib/src/convertit/development.ini &
-	@echo "Start screamshotter"
-	bin/django runserver --settings=screamshotter.settings 8001 &
-
 update:
-	#bin/develop update -f
 	./manage.py collectstatic --clear --noinput --verbosity=0
 	./manage.py migrate --noinput
 	./manage.py sync_translation_fields --noinput

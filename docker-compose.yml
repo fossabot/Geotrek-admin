@@ -16,17 +16,34 @@
      env_file:
        - docker.env
 
+   worker:
+     build: .
+     image: geotrek:2.15.2.dev0
+     volumes:
+       - ./src:/code/src
+     env_file:
+       - docker.env
+     environment:
+       - DJANGO_SETTINGS_MODULE=geotrek.settings.dev
+     depends_on:
+       - db
+       - redis
+     working_dir: /code/src
+     command: /code/venv/bin/python ./manage.py celery worker -l debug
+
    convertit:
      hostname: geotrek-convertit
      build:
-       context: ./convertit-master
+       context: ./docker/convertit-master
      working_dir: /opt/apps/convertit/
      command: /opt/apps/convertit/bin/pserve development.ini --reload
 
    screamshotter:
      hostname: geotrek-screamshotter
+     depends_on:
+       - convertit
      build:
-       context: ./screamshotter-master
+       context: ./docker/screamshotter-master
      command: /opt/apps/screamshotter/bin/python manage.py runserver 0.0.0.0:8001
 
    django:
@@ -35,7 +52,9 @@
      hostname: geotrek-django
      tty: true
      volumes:
-       - ./geotrek:/code/geotrek
+       - ./src:/code/src
+       - ./etc:/code/etc
+       - ./public:/code/public
      ports:
        - "8000:8000"
        - "2222:22"
@@ -43,12 +62,10 @@
        - docker.env
      user: "1001"
      environment:
-       - DJANGO_SETTINGS_MODULE=geotrek.settings.local
+       - DJANGO_SETTINGS_MODULE=geotrek.settings.dev
      depends_on:
-       - db
-       - redis
-       - convertit
+       - worker
        - screamshotter
-     working_dir: /code
+     working_dir: /code/src
      command: /code/venv/bin/python ./manage.py runserver_plus 0.0.0.0:8000
 

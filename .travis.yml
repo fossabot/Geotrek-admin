@@ -22,6 +22,7 @@ cache:
 
 
 before_install:
+  - cp docker.env.dist docker.env
   - docker-compose build
 
 install:

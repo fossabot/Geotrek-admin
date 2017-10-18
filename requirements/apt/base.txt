@@ -1,6 +1,8 @@
 unzip
 wget
 python-software-properties
+language-pack-en-base
+language-pack-fr-base
 git
 gettext
 python-dev

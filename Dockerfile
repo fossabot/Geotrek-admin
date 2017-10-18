@@ -8,6 +8,7 @@ RUN apt-get update
 RUN apt-get install $(grep -vE "^\s*#" /code/requirements/apt/docker.txt  | tr "\n" " ") -y -qq
 RUN apt-get install $(grep -vE "^\s*#" /code/requirements/apt/base.txt  | tr "\n" " ") -y -qq
 RUN apt-get upgrade -y && apt-get clean all && apt-get autoclean
+RUN locale-gen fr_FR.UTF-8
 RUN wget https://bootstrap.pypa.io/get-pip.py
 RUN python get-pip.py
 RUN rm get-pip.py

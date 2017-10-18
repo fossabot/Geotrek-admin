@@ -216,21 +216,9 @@ function minimum_system_dependencies {
 function geotrek_system_dependencies {
     sudo apt-get install -y -q --no-upgrade libjson0 gdal-bin libgdal-dev binutils libproj-dev
     echo_progress
-    # PostgreSQL client and headers
-    sudo apt-get install -y -q --no-upgrade postgresql-client-$psql_version libpq-dev
-    echo_progress
-    sudo apt-get install -y -qq libxml2-dev libxslt-dev  # pygal lxml
-    echo_progress
-    # Necessary for MapEntity Weasyprint
-    sudo apt-get install -y -qq python-lxml libcairo2 libpango1.0-0 libgdk-pixbuf2.0-dev libffi-dev shared-mime-info
-    echo_progress
 
     if $prod || $standalone ; then
-        sudo apt-get install -y -qq redis-server
-        echo_progress
-        sudo apt-get install -y -qq ntp fail2ban
-        echo_progress
-        sudo apt-get install -y -qq nginx memcached supervisor
+        sudo apt-get install $(grep -vE "^\s*#" ./requirements/apt/prod.txt  | tr "\n" " ") -y -qq
         echo_progress
     fi
 }
@@ -239,7 +227,7 @@ function geotrek_system_dependencies {
 function convertit_system_dependencies {
     if $standalone ; then
         echo_step "Conversion server dependencies..."
-        sudo apt-get install -y -qq libreoffice unoconv inkscape
+        sudo apt-get install $(grep -vE "^\s*#" ./requirements/apt/convertit.txt  | tr "\n" " ") -y -qq
         echo_progress
     fi
 }
@@ -425,9 +413,10 @@ function geotrek_setup {
 
     # Python bootstrap
     #make install
-    virtualenv venv
-    source ./venv/bin/activate
-    pip install -r ./requirements.txt -U
+    make bin/python
+    source venv/bin/activate
+    pip install -r ./requirements/apt/dev.txt -U
+    pip install -r ./requirements/apt/prod.txt -U
     echo_progress
 
     if $freshinstall && $interactive && ($prod || $standalone) ; then
@@ -440,7 +429,7 @@ function geotrek_setup {
     echo_step "Configure Unicode and French locales..."
     #sudo apt-get update > /dev/null
     echo_progress
-    sudo apt-get install -y -qq language-pack-en-base language-pack-fr-base
+    sudo apt-get install -y -qq $(grep -vE "^\s*#" ./requirements/apt/base.txt  | tr "\n" " ")
     sudo locale-gen fr_FR.UTF-8
     echo_progress
 

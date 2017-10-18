@@ -1,0 +1,6 @@
+redis-server
+ntp
+fail2ban
+nginx
+memcached
+supervisor

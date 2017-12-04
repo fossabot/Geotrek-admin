@@ -1,7 +1,7 @@
  version: '2'
  services:
    db:
-     image: mdillon/postgis:9.6
+     image: juank/postgis:9.6-2.4
      hostname: geotrek-postgres
      env_file:
        - docker.env
@@ -21,6 +21,8 @@
      image: geotrek:2.15.2.dev0
      volumes:
        - ./src:/code/src
+       - ./etc:/code/etc
+       - ./public:/code/public
      env_file:
        - docker.env
      environment:

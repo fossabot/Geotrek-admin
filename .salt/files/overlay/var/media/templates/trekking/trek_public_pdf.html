@@ -12,7 +12,7 @@
     {% block body %}
       <header>
         <div class="logo">
-          <img src="/media/upload/logo-rando-pdf.png" alt="">
+          <img src="{{ MEDIA_URL|add:'upload/logo-header.png' }}" alt="">
         </div>
         <div class="url">
           <div class="main">rando-alpes-haute-provence.fr</div>
@@ -39,7 +39,7 @@
             </legend>
           {% endif %}
         {% else %}
-          <div class="main-picture" style="background-image: url('/media/upload/placeholder.png');"></div><div class="main-map" style="background-image: url({{ map_url }});"></div>
+          <div class="main-picture" style="background-image: url('{{ MEDIA_URL|add:'upload/placeholder.png' }}');"></div><div class="main-map" style="background-image: url({{ map_url }});"></div>
         {% endif %}
       </div>
       <div class="intro-left">
@@ -123,7 +123,7 @@
                   <li>
                     {% trans "Markings" %} :
                     {% for network in object.networks.all %}
-                      {% if network.pictogram %}<span class="network-icon"><img src="/media/{{ network.pictogram.name }}"></span>{% endif %}
+                      {% if network.pictogram %}<span class="network-icon"><img src="{{ MEDIA_URL|add:network.pictogram.name }}"></span>{% endif %}
                       {{ network.network }}</span>
                     {% endfor %}
                   </li>
@@ -155,7 +155,7 @@
           {% if pois %}
             {% for poi in pois %}
               <div class="poi">
-                  {% if poi.type.pictogram %}<span class="icon"><img src="/media/{{ poi.type.pictogram.name }}"></span>{% endif %}
+                  {% if poi.type.pictogram %}<span class="icon"><img src="{{ MEDIA_URL|add:poi.type.pictogram.name }}"></span>{% endif %}
                   {{ poi.name }} ({{ poi.letter }})
               </div>
             {% endfor %}
@@ -236,7 +236,7 @@
           <section class="half-block source">
             <h2>{% trans "Source" %}</h2>
             {% for s in object.source.all %}
-               <div class="text-content">{% if s.pictogram %}<span class="source-icon"><img src="/media/{{ s.pictogram.name }}"></span> {% endif %}{{ s.name }}</div>
+               <div class="text-content">{% if s.pictogram %}<span class="source-icon"><img src="{{ MEDIA_URL|add:s.pictogram.name }}"></span> {% endif %}{{ s.name }}</div>
             {% endfor %}
           </section>
         {% endif %}
@@ -262,6 +262,7 @@
                     <div class="desk-name">{{ desk.name }}</div>
                     <div class="content">
                       {% if desk.street %}<div class="desk-address">{{ desk.street }}, {{ desk.postal_code }} {{ desk.municipality }}</div>{% endif %}
+                      {# {% if deks.photo %}<picture class="desk-picture"><img src="{{ MEDIA_URL|add:desk.photo.name }}"></picture>{% endif %} #}
                       {% if desk.email %}<div class="desk-email"><a href="mailto:{{ desk.email }}">{{ desk.email }}</a></div>{% endif %}
                       {% if desk.phone %}<div class="desk-tel">Tel : {{ desk.phone }}</div>{% endif %}
                       {% if desk.website %}<div class="desk-website"><a href="{{ desk.website }}">{{ desk.website }}</a></div>{% endif %}
@@ -280,7 +281,7 @@
               <div class="poi">
                 <div class="thumbnail">
                   {% if poi.thumbnail %}
-                    <img src="/media/{{ poi.thumbnail.name }}">
+                    <img src="{{ MEDIA_URL|add:poi.thumbnail.name }}">
                       {% if poi.thumbnail.author %}
                         <legend>{{ poi.thumbnail.author }}</legend>
                       {% endif %}
@@ -288,7 +289,7 @@
                 </div>
                 <div class="content with-pic">
                   <h3>
-                    {% if poi.type.pictogram %}<span class="icon"><img src="/media/{{ poi.type.pictogram.name }}"></span>{% endif %}
+                    {% if poi.type.pictogram %}<span class="icon"><img src="{{ MEDIA_URL|add:poi.type.pictogram.name }}"></span>{% endif %}
                     {{ poi.name }} ({{ poi.letter }})
                   </h3>
                   <div class="description">{{ poi.description|safe }}</div>

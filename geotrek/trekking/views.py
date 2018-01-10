@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import json
 import redis
+from urlparse import urljoin
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -12,7 +13,7 @@ from django.template.context import RequestContext
 from django.utils import translation
 from django.utils.decorators import method_decorator
 from django.utils.html import escape
-from django.views.generic import CreateView, ListView, RedirectView
+from django.views.generic import CreateView, ListView, RedirectView, DetailView, TemplateView
 from django.views.generic.detail import BaseDetailView
 from djcelery.models import TaskMeta
 from mapentity.helpers import alphabet_enumeration
@@ -30,7 +31,7 @@ from geotrek.core.models import AltimetryMixin
 from geotrek.core.views import CreateFromTopologyMixin
 from geotrek.trekking.forms import SyncRandoForm
 from geotrek.zoning.models import District, City, RestrictedArea
-from geotrek.celery import app as celery_app
+from geotrek.celery_conf import app as celery_app
 
 from .filters import TrekFilterSet, POIFilterSet, ServiceFilterSet
 from .forms import (TrekForm, TrekRelationshipFormSet, POIForm,
@@ -39,6 +40,8 @@ from .models import Trek, POI, WebLink, Service, TrekRelationship, OrderedTrekCh
 from .serializers import (TrekGPXSerializer, TrekSerializer, POISerializer,
                           CirkwiTrekSerializer, CirkwiPOISerializer, ServiceSerializer)
 from .tasks import launch_sync_rando
+if 'tourism' in settings.INSTALLED_APPS:
+    from geotrek.tourism.models import TouristicContent, TouristicEvent
 
 
 class SyncRandoRedirect(RedirectView):
@@ -253,6 +256,19 @@ class TrekDelete(MapEntityDelete):
     @same_structure_required('trekking:trek_detail')
     def dispatch(self, *args, **kwargs):
         return super(TrekDelete, self).dispatch(*args, **kwargs)
+
+
+class TrekMeta(DetailView):
+    model = Trek
+    template_name = 'trekking/trek_meta.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TrekMeta, self).get_context_data(**kwargs)
+        context['FACEBOOK_APP_ID'] = settings.FACEBOOK_APP_ID
+        context['facebook_image'] = urljoin(self.request.GET['rando_url'], settings.FACEBOOK_IMAGE)
+        context['FACEBOOK_IMAGE_WIDTH'] = settings.FACEBOOK_IMAGE_WIDTH
+        context['FACEBOOK_IMAGE_HEIGHT'] = settings.FACEBOOK_IMAGE_HEIGHT
+        return context
 
 
 class POILayer(MapEntityLayer):
@@ -601,6 +617,31 @@ def sync_update_json(request):
 
     return HttpResponse(json.dumps(results),
                         content_type="application/json")
+
+
+class Meta(TemplateView):
+    template_name = 'trekking/meta.html'
+
+    def get_context_data(self, **kwargs):
+        lang = self.request.GET['lang']
+        context = super(Meta, self).get_context_data(**kwargs)
+        context['FACEBOOK_APP_ID'] = settings.FACEBOOK_APP_ID
+        context['facebook_image'] = urljoin(self.request.GET['rando_url'], settings.FACEBOOK_IMAGE)
+        context['FACEBOOK_IMAGE_WIDTH'] = settings.FACEBOOK_IMAGE_WIDTH
+        context['FACEBOOK_IMAGE_HEIGHT'] = settings.FACEBOOK_IMAGE_HEIGHT
+        context['treks'] = Trek.objects.existing().order_by('pk').filter(
+            Q(**{'published_{lang}'.format(lang=lang): True}) |
+            Q(**{'trek_parents__parent__published_{lang}'.format(lang=lang): True,
+                 'trek_parents__parent__deleted': False})
+        )
+        if 'tourism' in settings.INSTALLED_APPS:
+            context['contents'] = TouristicContent.objects.existing().order_by('pk').filter(
+                **{'published_{lang}'.format(lang=lang): True}
+            )
+            context['events'] = TouristicEvent.objects.existing().order_by('pk').filter(
+                **{'published_{lang}'.format(lang=lang): True}
+            )
+        return context
 
 
 # Translations for public PDF

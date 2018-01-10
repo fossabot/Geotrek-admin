@@ -256,6 +256,7 @@ PROJECT_APPS += (
     'crispy_forms',
     'compressor',
     'djgeojson',
+    'django_filters',
     'tinymce',
     'geotrek.appconfig.EasyThumbnailsGeotrekConfig',  # easy_thumbnails
     'shapes',
@@ -264,6 +265,7 @@ PROJECT_APPS += (
     'leaflet',  # After mapentity to allow it to patch settings
     'rest_framework',
     'rest_framework_gis',
+    'rest_framework_swagger',
     'embed_video',
     'geotrek.appconfig.CeleryGeotrekConfig',  # djcelery
 )
@@ -283,6 +285,7 @@ INSTALLED_APPS = PROJECT_APPS + (
     'geotrek.tourism',
     'geotrek.flatpages',
     'geotrek.feedback',
+    'geotrek.api',
 )
 
 SERIALIZATION_MODULES = {
@@ -432,8 +435,8 @@ ALTIMETRIC_AREA_MARGIN = 0.15
 LEAFLET_CONFIG = {
     'SRID': 3857,
     'TILES': [
-        ('Scan', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '(c) OpenStreetMap Contributors'),
-        ('Ortho', 'http://oatile1.mqcdn.com/tiles/1.0.0/sat/{z}/{x}/{y}.png', '(c) MapQuest'),
+        ('OSM', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '(c) OpenStreetMap Contributors'),
+        ('OSM N&B', 'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', '(c) OpenStreetMap Contributors'),
     ],
     'TILES_EXTENT': SPATIAL_EXTENT,
     # Extent in API projection (Leaflet view default extent)
@@ -518,8 +521,8 @@ COMPLETENESS_FIELDS = {
 
 TRAIL_MODEL_ENABLED = True
 TREKKING_TOPOLOGY_ENABLED = True
-FLATPAGES_ENABLED = False  # False because still experimental
-TOURISM_ENABLED = False  # False because still experimental
+FLATPAGES_ENABLED = True
+TOURISM_ENABLED = True
 
 TREK_POI_INTERSECTION_MARGIN = 500  # meters (used only if TREKKING_TOPOLOGY_ENABLED = False)
 TOURISM_INTERSECTION_MARGIN = 500  # meters (always used)
@@ -597,3 +600,9 @@ If true; displays the attached pois pictures in the Trek's geojson pictures prop
 In Geotrek Rando it enables correlated pictures to be displayed in the slideshow.
 '''
 TREK_WITH_POIS_PICTURES = False
+
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'APIS_SORTER': 'alpha',
+    'JSON_EDITOR': True
+}

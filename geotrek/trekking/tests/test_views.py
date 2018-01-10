@@ -631,12 +631,12 @@ class TrekJSONDetailTest(TrekkingManagerTest):
 
     def test_parking_location_in_wgs84(self):
         parking_location = self.result['parking_location']
-        self.assertEqual(parking_location[0], -1.3630812101179008)
+        self.assertAlmostEqual(parking_location[0], -1.3630812101179008)
 
     def test_points_reference_are_exported_in_wgs84(self):
         geojson = self.result['points_reference']
         self.assertEqual(geojson['type'], 'MultiPoint')
-        self.assertEqual(geojson['coordinates'][0][0], -1.363081210117901)
+        self.assertAlmostEqual(geojson['coordinates'][0][0], -1.363081210117901)
 
     def test_touristic_contents(self):
         self.assertEqual(len(self.result['touristic_contents']), 1)
@@ -747,6 +747,7 @@ class TrekGPXTest(TrekkingManagerTest):
 
         for poi in self.trek.pois.all():
             poi.description_it = poi.description
+            poi.published_it = True
             poi.save()
 
         url = '/api/it/treks/{pk}/slug.gpx'.format(pk=self.trek.pk)
@@ -771,7 +772,7 @@ class TrekGPXTest(TrekkingManagerTest):
 
     def test_gpx_contains_pois(self):
         waypoints = self.parsed.findAll('wpt')
-        pois = self.trek.pois.all()
+        pois = self.trek.published_pois.all()
         self.assertEqual(len(waypoints), len(pois))
         waypoint = waypoints[0]
         name = waypoint.find('name').string
@@ -1039,12 +1040,11 @@ class CirkwiTests(TranslationResetMixin, TestCase):
             '<information_complementaire><titre>Advised parking</titre><description>Advised parking {n}</description></information_complementaire>'
             '<information_complementaire><titre>Public transport</titre><description>Public transport {n}</description></information_complementaire>'
             '<information_complementaire><titre>Advice</titre><description>Advice {n}</description></information_complementaire></informations_complementaires>'
-            '<tags_publics></tags_publics>'
             '</information>'
             '</informations>'
             '<distance>141</distance>'
             '<locomotions><locomotion duree="5400"></locomotion></locomotions>'
-            '<trace><point><lat>46.5</lat><lng>3.0</lng></point><point><lat>46.5009004423</lat><lng>3.00130397672</lng></point></trace>'
+            '<fichier_trace url="http://testserver/api/en/treks/{pk}/name-{n}.kml"/>'
             '<pois>'
             '<poi id_poi="{poi_pk}" date_modification="{poi_date_update}" date_creation="1388534400">'
             '<informations>'

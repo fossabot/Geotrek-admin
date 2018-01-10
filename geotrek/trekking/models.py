@@ -142,6 +142,29 @@ class Trek(StructureRelated, PicturesMixin, PublishableMixin, MapEntityMixin, To
             os.makedirs(basefolder)
         return os.path.join(basefolder, '%s-%s-%s.png' % (self._meta.model_name, self.pk, get_language()))
 
+    def get_map_image_extent(self, srid=settings.API_SRID):
+        extent = list(super(Trek, self).get_map_image_extent(srid))
+        if self.parking_location:
+            self.parking_location.transform(srid)
+            extent[0] = min(extent[0], self.parking_location.x)
+            extent[1] = min(extent[1], self.parking_location.y)
+            extent[2] = max(extent[2], self.parking_location.x)
+            extent[3] = max(extent[3], self.parking_location.y)
+        if self.points_reference:
+            self.points_reference.transform(srid)
+            prextent = self.points_reference.extent
+            extent[0] = min(extent[0], prextent[0])
+            extent[1] = min(extent[1], prextent[1])
+            extent[2] = max(extent[2], prextent[2])
+            extent[3] = max(extent[3], prextent[3])
+        for poi in self.published_pois:
+            poi.geom.transform(srid)
+            extent[0] = min(extent[0], poi.geom.x)
+            extent[1] = min(extent[1], poi.geom.y)
+            extent[2] = max(extent[2], poi.geom.x)
+            extent[3] = max(extent[3], poi.geom.y)
+        return extent
+
     @models.permalink
     def get_document_public_url(self):
         """ Override ``geotrek.common.mixins.PublishableMixin``
@@ -221,7 +244,7 @@ class Trek(StructureRelated, PicturesMixin, PublishableMixin, MapEntityMixin, To
         line.style.linestyle.color = simplekml.Color.red  # Red
         line.style.linestyle.width = 4  # pixels
         # Place marks
-        for poi in self.pois:
+        for poi in self.published_pois:
             place = poi.geom_3d.transform(settings.API_SRID, clone=True)
             kml.newpoint(name=poi.name,
                          description=plain_text(poi.description),
@@ -379,6 +402,22 @@ class Trek(StructureRelated, PicturesMixin, PublishableMixin, MapEntityMixin, To
     def source_display(self):
         return ','.join([unicode(source) for source in self.source.all()])
 
+    @property
+    def extent(self):
+        return self.geom.transform(settings.API_SRID, clone=True).extent if self.geom.extent else None
+
+    @property
+    def rando_url(self):
+        if settings.SPLIT_TREKS_CATEGORIES_BY_PRACTICE and self.practice:
+            category_slug = self.practice.slug
+        else:
+            category_slug = _('trek')
+        return '{}/{}/'.format(category_slug, self.slug)
+
+    @property
+    def meta_description(self):
+        return plain_text(self.ambiance or self.description_teaser or self.description)[:500]
+
 
 Path.add_property('treks', Trek.path_treks, _(u"Treks"))
 Topology.add_property('treks', Trek.topology_treks, _(u"Treks"))
@@ -442,7 +481,6 @@ class TrekRelationship(models.Model):
 
 
 class TrekNetwork(PictogramMixin):
-
     network = models.CharField(verbose_name=_(u"Name"), max_length=128, db_column='reseau')
 
     class Meta:
@@ -663,6 +701,10 @@ class POI(StructureRelated, PicturesMixin, PublishableMixin, MapEntityMixin, Top
 
     def distance(self, to_cls):
         return settings.TOURISM_INTERSECTION_MARGIN
+
+    @property
+    def extent(self):
+        return self.geom.transform(settings.API_SRID, clone=True).extent if self.geom else None
 
 
 Path.add_property('pois', POI.path_pois, _(u"POIs"))

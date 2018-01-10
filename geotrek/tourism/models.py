@@ -12,7 +12,7 @@ from easy_thumbnails.exceptions import InvalidImageFormatError
 from easy_thumbnails.files import get_thumbnailer
 from mapentity import registry
 from mapentity.models import MapEntityMixin
-from mapentity.serializers import smart_plain_text
+from mapentity.serializers import plain_text, smart_plain_text
 from modeltranslation.manager import MultilingualManager
 
 from geotrek.authent.models import StructureRelated
@@ -361,6 +361,19 @@ class TouristicContent(AddPropertyMixin, PublishableMixin, MapEntityMixin, Struc
     def themes_display(self):
         return ','.join([unicode(source) for source in self.themes.all()])
 
+    @property
+    def extent(self):
+        return self.geom.buffer(10).transform(settings.API_SRID, clone=True).extent
+
+    @property
+    def rando_url(self):
+        category_slug = _(u'touristic-content')
+        return '{}/{}/'.format(category_slug, self.slug)
+
+    @property
+    def meta_description(self):
+        return plain_text(self.description_teaser or self.description)[:500]
+
 
 Topology.add_property('touristic_contents', lambda self: intersecting(TouristicContent, self), _(u"Touristic contents"))
 Topology.add_property('published_touristic_contents', lambda self: intersecting(TouristicContent, self).filter(published=True), _(u"Published touristic contents"))
@@ -491,6 +504,15 @@ class TouristicEvent(AddPropertyMixin, PublishableMixin, MapEntityMixin, Structu
     @property
     def themes_display(self):
         return ','.join([unicode(source) for source in self.themes.all()])
+
+    @property
+    def rando_url(self):
+        category_slug = _(u'touristic-event')
+        return '{}/{}/'.format(category_slug, self.slug)
+
+    @property
+    def meta_description(self):
+        return plain_text(self.description_teaser or self.description)[:500]
 
 
 TouristicEvent.add_property('touristic_contents', lambda self: intersecting(TouristicContent, self), _(u"Touristic contents"))

@@ -1,4 +1,5 @@
 language: python
+dist: precise
 python:
   - "2.7"
 env:
@@ -49,9 +50,6 @@ before_install:
   - psql -c 'GRANT ALL PRIVILEGES ON DATABASE geotrekdb TO geotrek;' -U postgres
   - psql -c 'GRANT ALL ON spatial_ref_sys,geometry_columns,raster_columns TO geotrek;' -U postgres -d geotrekdb
   # GDAL-fix -- End (remove with Ubuntu 14.04)
-
-  # Enable experimental features during navigation tests
-  - sed -i "s/experimental = False/experimental = True/" etc/settings.ini
 
 install:
   - if [[ $ACTION != codestyle ]]; then deactivate; fi

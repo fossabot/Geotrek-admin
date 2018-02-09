@@ -209,7 +209,7 @@ function minimum_system_dependencies {
 
 
 function geotrek_system_dependencies {
-    sudo apt-get install -y -q --no-upgrade libjson0 gdal-bin libgdal-dev libssl-dev binutils libproj4-dev
+    sudo apt-get install -y -q --no-upgrade libjson0 gdal-bin libgdal-dev libssl-dev binutils libproj-dev
     echo_progress
     # PostgreSQL client and headers
     sudo apt-get install -y -q --no-upgrade postgresql-client-$psql_version libpq-dev

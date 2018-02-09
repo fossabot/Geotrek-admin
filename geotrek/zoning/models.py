@@ -69,7 +69,6 @@ class RestrictedAreaEdge(Topology):
     @classmethod
     def path_area_edges(cls, path):
         return cls.objects.existing()\
-                          .select_related('restricted_area')\
                           .select_related('restricted_area__area_type')\
                           .filter(aggregations__path=path).distinct('pk')
 

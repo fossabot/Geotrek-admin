@@ -1,22 +1,30 @@
 language: python
-dist: precise
+
+dist: trusty
+
+sudo: required
+
 python:
   - "2.7"
+
+services:
+  - postgresql
+
+addons:
+  postgresql: "9.3"
+
 env:
   - ACTION=test
   - ACTION=deploy
   - ACTION=integration
   - ACTION=codestyle
 
-
 matrix:
   allow_failures:
     - env: ACTION=integration
 
-
 cache:
   - apt
-
 
 before_install:
 
@@ -27,21 +35,21 @@ before_install:
   - "tar -zxf /tmp/geotrek-bundle.tar.gz --directory=$HOME || true"
 
   # GDAL-fix -- packaging is miserable, no way to obtain libgdal-dev for libgdal1 when libgdal1h available
-  - sudo apt-get update -qq
-  - sudo apt-get download -y libgdal-dev
-  - sudo dpkg-deb -x libgdal-dev*.deb /
-  - sudo ln -sf /usr/lib/libgdal.so.1 /usr/lib/libgdal.so
-  - sudo ldconfig
+  #- sudo apt-get update -qq
+  #- sudo apt-get download -y libgdal-dev
+  #- sudo dpkg-deb -x libgdal-dev*.deb /
+  #- sudo ln -sf /usr/lib/libgdal.so.1 /usr/lib/libgdal.so
+  #- sudo ldconfig
   # GDAL-fix -- Do not install GDAL from install script
-  - sed -i "s/gdal-bin//" install.sh
-  - sed -i "s/libgdal-dev//" install.sh
-  - sed -i "s/GDAL=.*/GDAL=1.9.0/" conf/buildout.cfg
+  #- sed -i "s/gdal-bin//" install.sh
+  #- sed -i "s/libgdal-dev//" install.sh
+  #- sed -i "s/GDAL=.*/GDAL=1.9.0/" conf/buildout.cfg
   # GDAL-fix -- Do not install postgis locally, trick test on host
   - make etc/settings.ini
   - sed -i "s/localhost/127.0.0.1/" etc/settings.ini
   # GDAL-fix -- Use Travis PostGIS, initialize DB
-  - sudo sed -i "s/^client_min_messages.*$/client_min_messages = log/" /etc/postgresql/*/main/postgresql.conf
-  - sudo /etc/init.d/postgresql restart
+  #- sudo sed -i "s/^client_min_messages.*$/client_min_messages = log/" /etc/postgresql/*/main/postgresql.conf
+  #- sudo /etc/init.d/postgresql restart
   - psql -c "CREATE DATABASE geotrekdb ENCODING 'UTF8' TEMPLATE template0;" -U postgres
   - psql -c 'CREATE EXTENSION postgis;' -U postgres -d geotrekdb
   - psql -c "CREATE USER geotrek WITH PASSWORD 'geotrek';" -U postgres

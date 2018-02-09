@@ -67,6 +67,7 @@ script:
   # Re-run for coverage
   - if [[ $ACTION == test ]]; then rm -rf ./var/cache/* ./var/media/maps/*; fi
   - if [[ $ACTION == test ]]; then ./bin/coverage run ./bin/django test geotrek; fi
+  - if [[ $ACTION == test ]]; then make node_modules; fi
   - if [[ $ACTION == test ]]; then make test_js; fi
 
 after_success:

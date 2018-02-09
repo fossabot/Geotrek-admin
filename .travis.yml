@@ -12,6 +12,9 @@ services:
 
 addons:
   postgresql: "9.3"
+  apt:
+    packages:
+      - postgresql-9.3-postgis-2.3
 
 env:
   - ACTION=test
@@ -71,11 +74,13 @@ script:
   - if [[ $ACTION == deploy || $ACTION == integration ]]; then make load_demo; fi
   - if [[ $ACTION == deploy ]]; then make test_nav host=localhost port=80; fi
   - if [[ $ACTION == integration ]]; then make test_export host=localhost port=80; fi
-  - if [[ $ACTION == test ]]; then make env_test test; fi
-  - if [[ $ACTION == test ]]; then make test_js; fi
+  #- if [[ $ACTION == test ]]; then make env_test test; fi
+
   # Re-run for coverage
   - if [[ $ACTION == test ]]; then rm -rf ./var/cache/* ./var/media/maps/*; fi
   - if [[ $ACTION == test ]]; then ./bin/coverage run ./bin/django test geotrek; fi
+  - if [[ $ACTION == test ]]; then make test_js; fi
+
 after_success:
   # Report coverage results to coveralls.io
   - if [[ $ACTION == test ]]; then ./bin/coverage report -m; fi

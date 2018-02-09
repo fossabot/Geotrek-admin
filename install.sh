@@ -212,7 +212,7 @@ function geotrek_system_dependencies {
     sudo apt-get install -y -q --no-upgrade libjson0 gdal-bin libgdal-dev libssl-dev binutils libproj-dev
     echo_progress
     # PostgreSQL client and headers
-    sudo apt-get install -y -q --no-upgrade postgresql-client-$psql_version libpq-dev
+    sudo apt-get install -y -q --no-upgrade postgresql-client-$psql_version postgresql-server-dev-$psql_version
     echo_progress
     sudo apt-get install -y -qq libxml2-dev libxslt-dev  # pygal lxml
     echo_progress

@@ -69,6 +69,8 @@ script:
   - if [[ $ACTION == deploy || $ACTION == integration ]]; then make load_demo; fi
   - nvm install 4.2.1
   - nvm use 4.2.1
+  - which casperjs
+  - which phantomjs
   - if [[ $ACTION == deploy ]]; then make test_nav host=localhost port=80; fi
   - if [[ $ACTION == integration ]]; then make test_export host=localhost port=80; fi
   - if [[ $ACTION == test ]]; then make env_test test; fi

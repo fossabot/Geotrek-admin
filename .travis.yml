@@ -32,7 +32,7 @@ cache:
 before_install:
   # disable installed phantomjs
   - sudo apt-get remove --purge phantomjs -y
-  - sudo rm -rf /usr/local/bin/casperjs /usr/local/bin/phantomjs
+  - sudo rm -rf /usr/local/bin/casperjs /usr/local/phantomjs/bin/phantomjs
   # Download bundle of python eggs, and use it as download cache
   - mkdir -p $HOME/.buildout/downloads
   - echo -e "[buildout]\ndownload-cache=$HOME/.buildout/downloads" > $HOME/.buildout/default.cfg

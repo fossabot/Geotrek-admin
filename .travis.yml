@@ -30,7 +30,8 @@ cache:
   - apt
 
 before_install:
-
+  # disable installed phantomjs
+  - sudo apt-get remove --purge phantomjs -y
   # Download bundle of python eggs, and use it as download cache
   - mkdir -p $HOME/.buildout/downloads
   - echo -e "[buildout]\ndownload-cache=$HOME/.buildout/downloads" > $HOME/.buildout/default.cfg

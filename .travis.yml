@@ -68,6 +68,7 @@ script:
   - if [[ $ACTION == integration ]]; then make test_export host=localhost port=80; fi
   - if [[ $ACTION == test ]]; then make env_test test; fi
   - if [[ $ACTION == test ]]; then make test_js; fi
+  # Re-run for coverage
   - if [[ $ACTION == test ]]; then rm -rf ./var/cache/* ./var/media/maps/*; fi
   - if [[ $ACTION == test ]]; then ./bin/coverage run ./bin/django test geotrek; fi
 

@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fcamillem%2FGeotrek-admin.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fcamillem%2FGeotrek-admin?ref=badge_shield)
+
 **Geotrek**, *paths* management for *National Parks* and *Tourism organizations*.
 
 .. image:: http://geotrek.fr/assets/img/logo.svg
@@ -89,3 +91,7 @@ Status of sub-projects
 
 .. |Leaflet.AlmostOver| image:: https://travis-ci.org/makinacorpus/Leaflet.GeometryUtil.png?branch=master
     :target: https://travis-ci.org/makinacorpus/Leaflet.AlmostOver?branch=master
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fcamillem%2FGeotrek-admin.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fcamillem%2FGeotrek-admin?ref=badge_large)
